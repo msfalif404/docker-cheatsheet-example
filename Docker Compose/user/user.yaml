@@ -1,0 +1,16 @@
+firstName: Muhammad
+middleName: Sya'bani
+lastName: Falif
+hobbies:
+  - Coding
+  - Sleeping
+  - Eating
+address:
+  street: Cipayung
+  city: Bogor
+  country: Indonesia
+wallet:
+  - type: cash
+    amount: 10000
+  - type: debit
+    amount: 5000

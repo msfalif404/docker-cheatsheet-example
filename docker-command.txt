@@ -1,0 +1,109 @@
+Note: ganti kurung dengan nilai asli sesuai keinginan.
+
+- docker version = Mengecek versi secara lengkap
+- docker -v = mengecek versi
+
+- docker image ls = mengecek list image yang dimiliki di local
+- docker image pull (namaimage):(tag) = Mendownload image dari docker registry / docker hub
+- docker image rm (namaimage):(tag) = Menghapus docker image
+
+- docker container ls = Melihat container yang sedang berjalan
+- docker container ls -a = Melihat container yang sedang stop dan berjalan
+- docker container create --name (namacontainer) (namaimage:tag) = Membuat container. Akan error jika ada container yang memiliki nama yang sama
+- docker container start (idcontainer)/(namacontainer) = Menjalankan container
+- docker container stop (idcontainer)/(namacontainer) = Memberhentikan container
+- docker container rm (idcontainer)/(namacontainer) = Menghapus container
+- docker container logs (idcontainer)/(namacontainer) = Untuk melihat log aplikasi di suatu container
+- docker container logs -f (idcontainer)/(namacontainer) = Untuk melihat log aplikasi secara realtime di suatu container
+- docker container exec -i - t (namacontainer) /bin/bash = Masuk ke dalam container untuk mengeksekusi suatu perintah
+- docker container create --name (namacontainer) --publish (porthost:portcontainer) (namaimage):(tag) = Membuat container sembari port forwarding sehingga bisa diakses dari luar. --publish bisa disingkat menjadi -p
+- docker container create --name (namacontainer) --env KEY="value" --env KEY2="value" (namaimage):(tag) = Membuat container sembari menambahkan environtment variable.
+- docker container stats = Melihat penggunaan resource untuk setiap container
+- docker container create --name (namacontainer) --publish (porthost:portcontainer) --memory (jumlahmemorinya) --cpus (jumlahcpunya) (namaimage):(tag). Default value cpu dan memory adalah 100%
+- docker container create --name (namacontainer) --mount "type=(jenismount),source=(sumber),destination=(tujuan),readonly" (namaimage):(tag) = Membuat mounting agar bisa sharing data antar host dan container
+
+- docker volume ls = Melihat daftar volume
+- docker volume create (namavolume) = Membuat volume
+- docker volume rm (namavolume) = Menghapus volume
+
+- docker container stop (namaimage)
+docker container run --rm --name ubuntubackup --mount "type=bind,source=C:/Users/msfal/OneDrive/Documents/Code/Youtube-PZN-Docker/backup,destination=/backup" --mount "type=volume,source=mongodata,destination=/data" ubuntu:latest tar cvf /backup/backup-lagi.tar.gz /data
+docker container start (namaimage) = Script untuk backup volume
+
+- docker volume create (namavolume)
+docker container run --rm --name ubunturestore --mount "type=bind,source=C:/Users/msfal/OneDrive/Documents/Code/Youtube-PZN-Docker/backup,destination=/backup" --mount "type=volume,source=mongorestore,destination=/data" ubuntu:latest bash -c "cd /data && tar xvf /backup/backup-lagi.tar.gz --strip 1" = Script untuk restore volume
+
+- docker container create --name mongovolume --mount "type=volume,source=mongodata,destination=/data/db" --env MONGO_INITDB_ROOT_USERNAME=msfalif --env MONGO_INITDB_ROOT_PASSWORD=Open404! --publish 27019:27017 mongo:latest
+
+- docker network ls = Melihat kumpulanm network
+- docker network create --driver (jenisdriver) (namanetwork) = Membuat network. Jenis driver default adalah bridge.
+- docker network rm (namanetwork) = Menghapus network
+- docker network disconnect (namanetwork) (namacontainer) = Menghapus network dari container
+- docket network connect (namanetwork) (namacontainer) = Menambahkan network ke container
+
+- docker container create --name (namacontainer) --network (namanetwork) (image):(tag) = Menambahkan network ke container
+
+- docker container create --name mongodb --network mongonetwork --env MONGO_INITDB_ROOT_USERNAME=msfalif --env MONGO_INITDB_ROOT_PASSWORD=Open404! mongo:latest
+
+- docker container create --name mongodbexpress --network mongonetwork --publish 8081:8081 --env ME_CONFIG_MONGODB_URL="mongodb://msfalif:Open404!@mongodb:27017/" mongo-express:latest
+
+- docker image inspect (namaimage) = Melihat image lebih detail
+- docker container inspect (namacontainer) = Melihat container lebih detail
+- docker volume inspect (namavolume) = Melihat volume lebih detail
+- docker network inspect (namanetwork) = Melihat network lebih detail
+
+- docker container prune = Menghapus container yang sudah stop
+- docker image prune = Menghapus image yang sudah stop
+- docker network prune = Menghapus network yang tidak digunakan
+- docker volume prune = Menghapus volume yang tidak digunakan
+- docker system prune = Menghapus container, image, dan network yang tidak digunakan
+
+============================================================================================================================================================
+
+- docker build -t (namaimage:tag) (dockerfile path) = Membuat docker image. Default value untuk tag adalah latest
+- docker build -t (namaimage:tag) (dockerfile path) --progres=plain = Menampilkan detail output Ketika build image
+- docker build -t (namaimage:tag) (dockerfile path) --no-cache = Build tanpa cache sebelumnya
+- FROM (namaimage:tag) = Membuat build stage dari image yang ditentukan
+- RUN (perintahnya) / RUN ([perintah1, perintah2])= mengeksekusi perintah di dalam image saat build stage
+- CMD (command) (param) (param) = Intruksi yang akan dijalankan Ketika container berjalan
+- CMD ["executable", "param", "param"] = Intruksi yang akan dijalankan Ketika container berjalan
+- LABEL KEY=VALUE = Intruksi yang digunakan untuk menambahkan metadata ke dalam docker image
+- LABEL KEY1=VALUE1 KEY2=vALUE2 = Intruksi yang digunakan untuk menambahkan metadata ke dalam docker image
+- ADD (source) (destination) = Intruksi yang dapat digunakan untuk menambahkan file dari source ke dalam folder destination di Docker image
+- COPY (source) (destination) = Intruksi yang dapat digunakan untuk menyalin file dari source ke dalam folder destination di Docker image. Error jika sourcenya adalah url dan file archive
+- EXPOSE (port) = Memberi tahu kepada pembaca atau pembuat Docker image bahwa docker image ini berjalan di port yang ditentukan, bukan berarti akan mempublish atau expose portnya.
+- ENV KEY=VALUE = Intruksi yang dapat digunakan untuk menambahkan environtment variable
+- VOLUME (absolute path) = Intruksi yang digunakan untuk membuat volume secara otomatis Ketika membuat docker container
+- WORKDIR (absolute path / relative path) = Intruksi yang digunakan untuk menentukan direktori untuk menjalankan intruksi RUN, CMD, ENTRYPOINT, COPY, dan ADD
+- RUN addgroup -S pzngroup
+RUN adduser -S -D -h /app pznuser pzngroup
+RUN chown -R pznuser:pzngroup /app
+USER pznuser
+USER (namauser) = Berpindah ke user tertentu
+- ARG (KEY)=(DEFAULTVALUE) = Intruksi yang digunakan untuk membuat variable Ketika build time dan tidak bisa digunakan Ketika container sudah berjalan
+- docker build -t (namaimage:tag) (dockerfile path) --build-arg (key)=(value) = Membuat docker image dengan menambahkan / mengubah nilai argument
+- HEALTHCHECK = Intruksi untuk mengecek Kesehatan container.
+- HEALTHCHECK NONE = Intruksi untuk mematikan pengecekan Kesehatan container
+- HEALTHCHECK [OPTIONS] CMD (command). Options: --interval=DURATION(default: 30s), --timeout=DURATION(default=30s), --start-period=DURATION(default=0s), --retries=N (default=3).
+- ENTRYPOINT ["command1","command2"] = Intruksi untuk menentukan executable file yang akan dijalankan oleh container
+- FROM golang:1.18-alpine as builder
+WORKDIR /app/
+COPY main.go /app/
+RUN go build -o /app/main /app/main.go
+
+FROM alpine:3
+WORKDIR /app/
+COPY --from=builder /app/main /app/
+CMD /app/main = Multi stage build
+- docker login -u (namauserdidockerhub) = Login ke docker hub lewat terminal
+- docker push (namaimage):(tag) = Ngepush image ke docker hub
+============================================================================================================================================================
+
+- docker compose version = Mengecek versi docker compose
+- docker compose create = Membuat container berdasarkan konfigurasi file docker compose
+- docker compose start = Menjalankan semua container yang didefinisikan di konfigurasi file docker compose
+- docker compose ps = Melihat status container yang hanya dibuat melalui konfigurasi file docker compose
+- docker compose stop = Memberhentikan semua container yang didefinisikan di konfigurasi file docker compose
+- docker compose down = Menghapus semua container (tidak termasuk volume) yang didefinisikan di konfigurasi file docker compose. Network dan volume yang berkaitan atau yang digunakan container tersebut juga akan dihapus.
+- docker compose ls = Melihat daftar project yang sedang berjalan
+- docker compose build = Membuat image dari Dockerfile yang dikonfigurasikan melalui Docker Compose
